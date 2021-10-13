@@ -9,7 +9,7 @@ export interface SizeAndPosition {
 
 export type ItemPosition = 'absolute' | 'sticky';
 
-export interface ItemStyle {
+export type ItemStyle = {
     position: ItemPosition;
     top?: number;
     left: number;

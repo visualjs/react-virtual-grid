@@ -11,11 +11,13 @@ export default defineConfig({
       name: 'VisualJS',
       fileName: (format) => `react-virtual-grid.${format}.js`
     },
+    sourcemap: true,
     rollupOptions: {
-      external: ['react'],
+      external: ['react', 'react/jsx-runtime'],
       output: {
         globals: {
-          react: 'React'
+          react: 'React',
+          'react/jsx-runtime': 'jsxRuntime'
         }
       }
     }

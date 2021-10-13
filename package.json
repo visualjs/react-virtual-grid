@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "./dist/react-virtual-grid.umd.js",
   "module": "./dist/react-virtual-grid.es.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "vite --force",
     "build": "vite build && tsc -p ./tsconfig.json -emitDeclarationOnly",
