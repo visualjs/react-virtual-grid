@@ -1,4 +1,4 @@
-import React, { createElement } from "react";
+import React from "react";
 import { ALIGNMENT, SCROLL_CHANGE_REASON } from "./constants";
 import SizeAndPositionManager, { ItemSize } from "./SizeAndPositionManager";
 import { STYLE_INNER, STYLE_ITEM, STYLE_WRAPPER } from "./styles";
@@ -232,19 +232,15 @@ export class VirtualGrid extends React.PureComponent<Props, State> {
                 offsetTop: nextProps.scrollTopOffset || 0,
                 scrollChangeReason: SCROLL_CHANGE_REASON.REQUESTED,
             });
-        } else if (
-            typeof nextProps.scrollToColumnIndex === 'number' &&
-            typeof nextProps.scrollToRowIndex === 'number' &&
-            (scrollPropsHaveChanged || itemPropsHaveChanged)
-        ) {
+        } else if (scrollPropsHaveChanged || itemPropsHaveChanged) {
             this.setState({
                 offsetLeft: this.getOffsetForColumn(
-                    nextProps.scrollToColumnIndex,
+                    nextProps.scrollToColumnIndex || 0,
                     nextProps.scrollToColumnAlignment,
                     nextProps.columnCount,
                 ),
                 offsetTop: this.getOffsetForRow(
-                    nextProps.scrollToRowIndex,
+                    nextProps.scrollToRowIndex || 0,
                     nextProps.scrollToRowAlignment,
                     nextProps.rowCount,
                 ),
