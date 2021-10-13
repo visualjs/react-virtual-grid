@@ -1,10 +1,13 @@
-import React from "react";
+import React, { createElement } from "react";
 import { ALIGNMENT, SCROLL_CHANGE_REASON } from "./constants";
 import SizeAndPositionManager, { ItemSize } from "./SizeAndPositionManager";
 import { STYLE_INNER, STYLE_ITEM, STYLE_WRAPPER } from "./styles";
 
 const DEFAULT_OVERSCAN_ROW_COUNT = 3;
-const DEFAULT_OVERSCAN_COLUMN_COUNT = 0;
+const DEFAULT_OVERSCAN_COLUMN_COUNT = 1;
+
+const DEFAULT_ROW_HEIGHT = 50;
+const DEFAULT_COLUMN_WIDTH = 100;
 
 export type ItemPosition = 'absolute' | 'sticky';
 
@@ -90,7 +93,7 @@ export class VirtualGrid extends React.PureComponent<Props, State> {
         estimatedItemSize: this.getEstimatedItemSize(
             this.props.estimatedRowHeight,
             this.props.rowHeight,
-            50
+            DEFAULT_ROW_HEIGHT
         ),
     });
 
@@ -100,7 +103,7 @@ export class VirtualGrid extends React.PureComponent<Props, State> {
         estimatedItemSize: this.getEstimatedItemSize(
             this.props.estimatedColumnWidth,
             this.props.columnWidth,
-            100
+            DEFAULT_COLUMN_WIDTH
         )
     });
 
@@ -150,6 +153,119 @@ export class VirtualGrid extends React.PureComponent<Props, State> {
         this.scrollTo({ left: scrollLeft, top: scrollTop });
     }
 
+    componentWillReceiveProps(nextProps: Props) {
+
+        const {
+            estimatedRowHeight,
+            estimatedColumnWidth,
+            rowCount,
+            columnCount,
+            rowHeight,
+            columnWidth,
+            scrollTopOffset,
+            scrollLeftOffset,
+            scrollToRowAlignment,
+            scrollToColumnAlignment,
+            scrollToRowIndex,
+            scrollToColumnIndex,
+        } = this.props;
+
+        const scrollPropsHaveChanged =
+            nextProps.scrollToRowIndex !== scrollToRowIndex ||
+            nextProps.scrollToColumnIndex !== scrollToColumnIndex ||
+            nextProps.scrollToRowAlignment !== scrollToRowAlignment ||
+            nextProps.scrollToColumnAlignment !== scrollToColumnAlignment;
+        const itemPropsHaveChanged =
+            nextProps.rowCount !== rowCount ||
+            nextProps.columnCount !== columnCount ||
+            nextProps.rowHeight !== rowHeight ||
+            nextProps.columnWidth !== columnWidth ||
+            nextProps.estimatedRowHeight !== estimatedRowHeight ||
+            nextProps.estimatedColumnWidth !== estimatedColumnWidth;
+
+        if (nextProps.rowHeight !== rowHeight) {
+            this.rowManager.updateConfig({
+                itemSizeGetter: this.itemSizeGetter(nextProps.rowHeight),
+            });
+        }
+
+        if (nextProps.columnWidth !== columnWidth) {
+            this.columnManager.updateConfig({
+                itemSizeGetter: this.itemSizeGetter(nextProps.columnWidth),
+            });
+        }
+
+        if (
+            nextProps.rowCount !== rowCount ||
+            nextProps.estimatedRowHeight !== estimatedRowHeight
+        ) {
+            this.rowManager.updateConfig({
+                itemCount: nextProps.rowCount,
+                estimatedItemSize: this.getEstimatedItemSize(
+                    nextProps.estimatedRowHeight, nextProps.rowHeight, DEFAULT_ROW_HEIGHT
+                ),
+            });
+        }
+
+        if (
+            nextProps.columnCount !== columnCount ||
+            nextProps.estimatedColumnWidth !== estimatedColumnWidth
+        ) {
+            this.columnManager.updateConfig({
+                itemCount: nextProps.columnCount,
+                estimatedItemSize: this.getEstimatedItemSize(
+                    nextProps.estimatedColumnWidth, nextProps.columnWidth, DEFAULT_COLUMN_WIDTH
+                ),
+            });
+        }
+
+        if (itemPropsHaveChanged) {
+            this.recomputeSizes();
+        }
+
+        if (
+            nextProps.scrollLeftOffset !== scrollLeftOffset ||
+            nextProps.scrollTopOffset != scrollTopOffset
+        ) {
+            this.setState({
+                offsetLeft: nextProps.scrollLeftOffset || 0,
+                offsetTop: nextProps.scrollTopOffset || 0,
+                scrollChangeReason: SCROLL_CHANGE_REASON.REQUESTED,
+            });
+        } else if (
+            typeof nextProps.scrollToColumnIndex === 'number' &&
+            typeof nextProps.scrollToRowIndex === 'number' &&
+            (scrollPropsHaveChanged || itemPropsHaveChanged)
+        ) {
+            this.setState({
+                offsetLeft: this.getOffsetForColumn(
+                    nextProps.scrollToColumnIndex,
+                    nextProps.scrollToColumnAlignment,
+                    nextProps.columnCount,
+                ),
+                offsetTop: this.getOffsetForRow(
+                    nextProps.scrollToRowIndex,
+                    nextProps.scrollToRowAlignment,
+                    nextProps.rowCount,
+                ),
+                scrollChangeReason: SCROLL_CHANGE_REASON.REQUESTED,
+            });
+        }
+    }
+
+    componentDidUpdate(_: Props, prevState: State) {
+        const { offsetLeft, offsetTop, scrollChangeReason } = this.state;
+
+        if (
+            (
+                prevState.offsetLeft !== offsetLeft ||
+                prevState.offsetTop != offsetTop
+            ) && scrollChangeReason === SCROLL_CHANGE_REASON.REQUESTED
+        ) {
+            this.scrollTo({ left: offsetLeft, top: offsetTop });
+        }
+    }
+
     componentWillUnmount() {
         this.rootNode?.removeEventListener('scroll', this.handleScroll);
     }
@@ -196,6 +312,13 @@ export class VirtualGrid extends React.PureComponent<Props, State> {
             currentOffset: (this.state && this.state.offsetTop) || 0,
             targetIndex: index,
         });
+    }
+
+    recomputeSizes(startRowIndex = 0, startColumnIndex = 0) {
+        this.rowStyleCache = {};
+        this.columnStyleCache = {};
+        this.rowManager.resetItem(startRowIndex);
+        this.columnManager.resetItem(startColumnIndex);
     }
 
     private getEstimatedItemSize(estimatedSize?: number, itemSize?: ItemSize, defaultSize: number = 50): number {
