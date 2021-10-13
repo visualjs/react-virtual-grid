@@ -10,6 +10,14 @@ export default defineConfig({
       entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'VisualJS',
       fileName: (format) => `react-virtual-grid.${format}.js`
+    },
+    rollupOptions: {
+      external: ['react'],
+      output: {
+        globals: {
+          react: 'React'
+        }
+      }
     }
   }
 });
