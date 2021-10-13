@@ -1,4 +1,4 @@
-import { ItemPosition, ItemStyle } from ".";
+import { ItemPosition, ItemStyle } from "./types";
 
 export const STYLE_WRAPPER: React.CSSProperties = {
     overflow: 'auto',

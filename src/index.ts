@@ -1,11 +1,7 @@
-import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
-
 export * from './VirtualGrid';
 export * from './constants';
-export {
-    AutoSizer
-}
+export * from './types';
 
-export type {
-    AutoSizerProps
+export function sum(a: number, b: number) {
+    return a + b;
 }

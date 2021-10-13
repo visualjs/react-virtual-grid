@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { CellInfo, RowInfo, VirtualGrid, AutoSizer, ALIGNMENT } from '../src';
+import { CellInfo, RowInfo, VirtualGrid, ALIGNMENT } from '../src';
 
 import './example.css';
 
@@ -112,27 +112,21 @@ class Example extends React.Component<{}, State> {
                     </div>
                 </div>
                 <div className="grid">
-                    <AutoSizer>
-                        {
-                            ({ width, height }) => (
-                                <VirtualGrid
-                                    width={width}
-                                    height={height}
-                                    className="virtual-grid"
-                                    rowCount={10000}
-                                    rowHeight={this.getRowHeight}
-                                    columnCount={200}
-                                    columnWidth={this.getColumnWidth}
-                                    renderRow={this.renderRow}
-                                    renderCell={this.renderCell}
-                                    scrollToRowIndex={this.state.scrollToRowIndex}
-                                    scrollToRowAlignment={this.state.scrollToRowAlignment}
-                                    scrollToColumnIndex={this.state.scrollToColumnIndex}
-                                    scrollToColumnAlignment={this.state.scrollToColumnAlignment}
-                                />
-                            )
-                        }
-                    </AutoSizer>
+                    <VirtualGrid
+                        width={600}
+                        height={450}
+                        className="virtual-grid"
+                        rowCount={10000}
+                        rowHeight={this.getRowHeight}
+                        columnCount={200}
+                        columnWidth={this.getColumnWidth}
+                        renderRow={this.renderRow}
+                        renderCell={this.renderCell}
+                        scrollToRowIndex={this.state.scrollToRowIndex}
+                        scrollToRowAlignment={this.state.scrollToRowAlignment}
+                        scrollToColumnIndex={this.state.scrollToColumnIndex}
+                        scrollToColumnAlignment={this.state.scrollToColumnAlignment}
+                    />
                 </div>
             </div>
         );

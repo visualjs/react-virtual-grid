@@ -1,12 +1,5 @@
 import { ALIGNMENT } from './constants';
-
-export type ItemSizeGetter = (index: number) => number;
-export type ItemSize = number | number[] | ItemSizeGetter;
-
-export interface SizeAndPosition {
-    size: number;
-    offset: number;
-}
+import { ItemSizeGetter, SizeAndPosition } from './types';
 
 interface SizeAndPositionData {
     [id: number]: SizeAndPosition;

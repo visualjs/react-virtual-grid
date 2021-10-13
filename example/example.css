@@ -19,6 +19,8 @@ body {
 
 .controls {
     display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .control {
@@ -109,6 +111,7 @@ body {
     background: #fff;
     border-radius: 2px;
     border: 1px solid #dedede;
+	margin: 20px auto;
 }
 
 .row {

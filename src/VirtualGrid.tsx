@@ -1,7 +1,8 @@
 import React from "react";
 import { ALIGNMENT, SCROLL_CHANGE_REASON } from "./constants";
-import SizeAndPositionManager, { ItemSize } from "./SizeAndPositionManager";
+import SizeAndPositionManager from "./SizeAndPositionManager";
 import { STYLE_INNER, STYLE_ITEM, STYLE_WRAPPER } from "./styles";
+import { RowInfo, CellInfo, ItemSize, ItemStyle } from "./types";
 
 const DEFAULT_OVERSCAN_ROW_COUNT = 3;
 const DEFAULT_OVERSCAN_COLUMN_COUNT = 1;
@@ -9,35 +10,8 @@ const DEFAULT_OVERSCAN_COLUMN_COUNT = 1;
 const DEFAULT_ROW_HEIGHT = 50;
 const DEFAULT_COLUMN_WIDTH = 100;
 
-export type ItemPosition = 'absolute' | 'sticky';
-
-export interface ItemStyle {
-    position: ItemPosition;
-    top?: number;
-    left: number;
-    width?: string | number;
-    height?: string | number;
-    marginTop?: number;
-    marginLeft?: number;
-    marginRight?: number;
-    marginBottom?: number;
-    zIndex?: number;
-}
-
 interface StyleCache {
     [id: number]: ItemStyle;
-}
-
-export interface RowInfo {
-    row: number;
-    cells: React.ReactNode[];
-    style: ItemStyle;
-}
-
-export interface CellInfo {
-    row: number;
-    column: number;
-    style: ItemStyle;
 }
 
 export interface Props {
