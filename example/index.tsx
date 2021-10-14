@@ -122,6 +122,8 @@ class Example extends React.Component<{}, State> {
                         columnWidth={this.getColumnWidth}
                         renderRow={this.renderRow}
                         renderCell={this.renderCell}
+                        overscanRowCount={10}
+                        overscanColumnCount={2}
                         scrollToRowIndex={this.state.scrollToRowIndex}
                         scrollToRowAlignment={this.state.scrollToRowAlignment}
                         scrollToColumnIndex={this.state.scrollToColumnIndex}

@@ -316,7 +316,7 @@ export class VirtualGrid extends React.PureComponent<Props, State> {
 
         const { size, offset } = this.rowManager.getSizeAndPositionForIndex(index);
 
-        return (this.rowStyleCache[index] = { ...STYLE_ITEM, height: size, top: offset });
+        return (this.rowStyleCache[index] = { ...STYLE_ITEM, height: size, transform: `translateY(${offset}px)` });
     }
 
     private getColumnStyle(index: number) {

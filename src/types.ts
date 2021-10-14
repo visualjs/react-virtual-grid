@@ -13,6 +13,7 @@ export type ItemStyle = {
     position: ItemPosition;
     top?: number;
     left: number;
+    transform?: string;
     width?: string | number;
     height?: string | number;
     marginTop?: number;
