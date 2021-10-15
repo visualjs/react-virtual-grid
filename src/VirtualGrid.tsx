@@ -3,7 +3,10 @@ import { ALIGNMENT, SCROLL_CHANGE_REASON } from "./constants";
 import SizeAndPositionManager from "./SizeAndPositionManager";
 import { STYLE_INNER, STYLE_ITEM, STYLE_WRAPPER } from "./styles";
 import { RowInfo, CellInfo, ItemSize, ItemStyle } from "./types";
+import { throttle } from "./utils";
 
+const DEFAULT_SCROLL_RATE = 1000 / 10;
+const DEFAULT_SCROLL_TIMEOUT = 1000 / 5;
 const DEFAULT_OVERSCAN_ROW_COUNT = 3;
 const DEFAULT_OVERSCAN_COLUMN_COUNT = 1;
 
@@ -28,6 +31,9 @@ export interface Props {
     columnCount: number;
     columnWidth: ItemSize;
     estimatedColumnWidth?: number;
+    // performance tuning
+    scrollRate?: number; // ms
+    scrollTimeout?: number; // ms
     // overscan count
     overscanColumnCount?: number;
     overscanRowCount?: number;
@@ -53,6 +59,8 @@ export interface State {
 export class VirtualGrid extends React.PureComponent<Props, State> {
 
     static defaultProps = {
+        scrollRate: DEFAULT_SCROLL_RATE,
+        scrollTimeout: DEFAULT_SCROLL_TIMEOUT,
         overscanRowCount: DEFAULT_OVERSCAN_ROW_COUNT,
         overscanColumnCount: DEFAULT_OVERSCAN_COLUMN_COUNT,
     };
@@ -103,11 +111,13 @@ export class VirtualGrid extends React.PureComponent<Props, State> {
 
     componentDidMount() {
         const {
+            scrollRate = DEFAULT_SCROLL_RATE,
+            scrollTimeout = DEFAULT_SCROLL_TIMEOUT,
             scrollLeftOffset, scrollToColumnIndex,
             scrollTopOffset, scrollToRowIndex,
         } = this.props;
 
-        this.rootNode?.addEventListener('scroll', this.handleScroll, { passive: true });
+        this.rootNode?.addEventListener('scroll', throttle(this.handleScroll, scrollTimeout, scrollRate), { passive: true });
 
         let scrollLeft = undefined;
         let scrollTop = undefined;
